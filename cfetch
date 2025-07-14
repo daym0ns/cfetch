@@ -1,0 +1,109 @@
+#!/bin/bash
+
+# Colors
+MAUVE='\033[38;5;189m'
+MAROON='\033[38;5;218m'
+WHITE='\033[38;5;255m'
+RESET='\033[0m'
+
+get_os() {
+    if [[ -f /etc/os-release ]]; then
+        . /etc/os-release
+        echo "$NAME"
+    else
+        echo "Unknown OS"
+    fi
+}
+
+get_kernel() {
+    echo "$(uname -r | sed s/-.*//g)"
+}
+
+get_hostname() {
+	echo "$(whoami)@$(hostname)"
+}
+
+get_cpu() {
+    echo "$(grep -m 1 'model name' /proc/cpuinfo | cut -d ':' -f2 | xargs | sed s/with.*//g)"
+}
+
+get_memory() {
+    used=$(free -b | awk '/^Mem:/ {print $3}')
+    total=$(free -b | awk '/^Mem:/ {print $2}')
+    used_gb=$(bc -l <<< "scale=2; $used/1024/1024/1024")
+    total_gb=$(bc -l <<< "scale=2; $total/1024/1024/1024")
+    echo "${used_gb}G/${total_gb}G"
+}
+
+
+get_disk() {
+    df -h / | awk 'NR==2 {print $3 "/" $2}'
+}
+
+get_window_manager() {
+    wmctrl -m > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "$(wmctrl -m | grep 'Name' | awk '{print $2}')"
+    else
+        echo "Unknown | Check if wmctrl is installed"
+    fi
+}
+
+get_gpu() {
+    if command -v lspci &> /dev/null; then
+        gpu_name=$(lspci | grep -i vga | cut -d '[' -f2 | cut -d ']' -f1 | awk -F'/' '{print $1}' | sed 's/ *Max-Q//g; s/\/PCIe\/SSE2//g' | xargs)
+        echo "${gpu_name//Mobile/M}"
+    elif command -v glxinfo &> /dev/null; then
+        glxinfo | grep "OpenGL renderer" | cut -d ':' -f2- | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed 's/\/PCIe\/SSE2//g' | xargs
+    else
+        echo "GPU information not available"
+    fi
+}
+
+ascii_info() {
+	echo -e "${WHITE}              ${MAROON}$(get_hostname)${RESET}"
+	echo -e "${WHITE}"
+	echo -e "${WHITE}              ${MAROON}OS:${MAUVE} $(get_os)${RESET}"
+	echo -e "${WHITE}    /\_/\     ${MAROON}Kernel:${MAUVE} $(get_kernel)${RESET}"
+	echo -e "${WHITE}   ( o.o )    ${MAROON}Window Manager:${MAUVE} $(get_window_manager)${RESET}"
+	echo -e "${WHITE}    > ^ <     ${MAROON}CPU:${MAUVE} $(get_cpu)${RESET}"
+	echo -e "${WHITE}              ${MAROON}Memory:${MAUVE} $(get_memory)${RESET}"
+	echo -e "${WHITE}              ${MAROON}Disk Usage:${MAUVE} $(get_disk)${RESET}"
+	echo -e "${WHITE}              ${MAROON}GPU:${MAUVE} $(get_gpu)${RESET}"
+}
+
+no_ascii() {
+	echo -e " "
+	echo -e "${MAROON}$(get_hostname)${RESET}"
+	echo -e " "
+	echo -e "${MAROON}OS:${MAUVE} $(get_os)${RESET}"
+	echo -e "${MAROON}Kernel:${MAUVE} $(get_kernel)${RESET}"
+	echo -e "${MAROON}Window Manager:${MAUVE} $(get_window_manager)${RESET}"
+	echo -e "${MAROON}CPU:${MAUVE} $(get_cpu)${RESET}"
+	echo -e "${MAROON}Memory:${MAUVE} $(get_memory)${RESET}"
+	echo -e "${MAROON}Disk Usage:${MAUVE} $(get_disk)${RESET}"
+	echo -e "${MAROON}GPU:${MAUVE} $(get_gpu)${RESET}"	
+}
+
+while [ $# -gt 0 ]; do
+    case $1 in
+        --no-ascii)
+            shift
+            no_ascii
+            exit 0
+            ;;
+        -n)
+            shift
+            no_ascii
+            exit 0
+            ;;
+        *)
+            ascii_info
+            exit 0
+            ;;
+    esac
+done
+
+if [ $# -eq 0 ]; then
+    ascii_info
+fi
