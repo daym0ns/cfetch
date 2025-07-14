@@ -14,3 +14,13 @@ You can use the -n or --no-ascii flag to remove the cat
               Disk Usage: 52G/936G
               GPU: GeForce RTX 3060 M
 ```
+
+## Installation
+
+```
+git clone https://github.com/daym0ns/cfetch.git
+cd cfetch
+sudo install cfetch /usr/local/bin
+cd ..
+rm -rf cfetch
+```
