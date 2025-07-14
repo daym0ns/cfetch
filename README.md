@@ -25,4 +25,6 @@ cd ..
 rm -rf cfetch
 ```
 You can also chain this into one command:
-`git clone https://github.com/daym0ns/cfetch.git && cd cfetch && sudo install cfetch /usr/local/bin && cd .. && rm -rf cfetch`
+```bash
+git clone https://github.com/daym0ns/cfetch.git && cd cfetch && sudo install cfetch /usr/local/bin && cd .. && rm -rf cfetch
+```
