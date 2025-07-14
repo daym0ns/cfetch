@@ -28,3 +28,8 @@ You can also chain this into one command:
 ```bash
 git clone https://github.com/daym0ns/cfetch.git && cd cfetch && sudo install cfetch /usr/local/bin && cd .. && rm -rf cfetch
 ```
+
+## Dependencies
+```bash
+sudo pacman -Sy inetutils coreutils bc wmctrl pciutils mesa-utils --needed
+```
