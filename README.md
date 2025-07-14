@@ -3,6 +3,7 @@ A simple sysinfo tool written in Bash
 Made under the catppuccin mocha palette
 You can use the -n or --no-ascii flag to remove the cat
 
+```
               user@archlinux
 
               OS: Arch Linux
@@ -12,3 +13,4 @@ You can use the -n or --no-ascii flag to remove the cat
               Memory: 3.67G/15.46G
               Disk Usage: 52G/936G
               GPU: GeForce RTX 3060 M
+```
