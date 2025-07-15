@@ -24,7 +24,7 @@ get_hostname() {
 }
 
 get_cpu() {
-    echo "$(grep -m 1 'model name' /proc/cpuinfo | cut -d ':' -f2 | xargs | sed s/with.*//g)"
+    echo "$(grep -m 1 'model name' /proc/cpuinfo | cut -d ':' -f2 | xargs | sed s/with.*//g | sed s/"(TM)"//g | sed s/"(R)"//g | sed s/@.*//g)"
 }
 
 get_memory() {
